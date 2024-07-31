@@ -2,15 +2,15 @@ import React, {  useState } from "react";
 import { useDrop } from "react-dnd";
 import { ItemTypes, ItemType } from "./types";
 import Modal from "./Modal";
-import EditTextModal from "./EditTextModal"; // Ensure this component exists
 import EditOptionsModal from "./EditOptionsModal";
 import setting from "assets/icons/setting.svg";
 import trash from "assets/icons/trash.svg";
 import upArrow from "assets/icons/up.svg"; // Replace with actual path
 import downArrow from "assets/icons/down.svg";
 import "./style.css"; // Ensure Tailwind styles are included
-import ConditionModal from "./ConditionModal";
+import NewModal from "./NewModal";
 import { Condition } from "./types";
+
 
 
 
@@ -27,7 +27,7 @@ type FormElement = {
 
 
 
-const FormBuilder: React.FC = () => {
+const FormBuilder: React.FC = () => { 
   const [formElements, setFormElements] = useState<FormElement[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
@@ -35,7 +35,8 @@ const FormBuilder: React.FC = () => {
   const [editElement, setEditElement] = useState<FormElement | null>(null);
   const [componentName, setComponentName] = useState("");
   const [componentType, setComponentType] = useState<string>("patient");
-  const [editingConditionsElement, setEditingConditionsElement] = useState<FormElement | null>(null);
+  const [conditions, setConditions] = useState<Condition[]>([]);
+  const [showNewModal, setShowNewModal] = useState(false);
 
 
   const [, drop] = useDrop({
@@ -57,22 +58,14 @@ const FormBuilder: React.FC = () => {
 
   const handleCloseModal = () => {
     setShowModal(false);
+  }
+
+ 
+  const handleSaveCondition = (condition: Condition) => {
+    setConditions((prev) => [...prev, condition]);
   };
 
-  const handleEditConditions = (element: FormElement) => {
-    setEditingConditionsElement(element);
-  };
 
-  const handleSaveConditions = (updatedElement: FormElement) => {
-    setFormElements((prev) =>
-      prev.map((el) => (el.id === updatedElement.id ? updatedElement : el))
-    );
-    setEditingConditionsElement(null);
-  };
-
-  const handleCloseConditionModal = () => {
-    setEditingConditionsElement(null);
-  };
 
   const handleUpdateElement = (id: string, value: string) => {
     setFormElements((prev) =>
@@ -110,9 +103,7 @@ const FormBuilder: React.FC = () => {
       )
     );
   };
-  const handleCloseEditModal = () => {
-    setEditElement(null);
-  };
+ 
 
   const handleLabelChange = (id: string, label: string) => {
     setFormElements((prev) =>
@@ -190,17 +181,31 @@ const FormBuilder: React.FC = () => {
           <option> prescription </option>
           <option> workflow </option>
         </select>
-        {formElements.map((element) => (
-          <div
-            key={element.id}
-            className={`field-container p-2 mb-2 border bg-gray-200 border-gray-200 relative hover:border-gray-400 hover:shadow-md transition duration-200 ${
-              selectedElementId === element.id
-                ? "border-solid border-2 border-gray-400"
-                : ""
-            }`}
-            onClick={() => handleSelectElement(element.id)}
-            style={{ borderRadius: "8px", position: "relative" }}
-          >
+        {formElements.map((element) => {
+  const applicableConditions = conditions.filter(cond => cond.field === element.id);
+  const isVisible = applicableConditions.every(cond => {
+    const fieldValue = formElements.find(el => el.id === cond.field)?.value;
+    if (cond.operator === 'equals') return fieldValue === cond.value;
+    if (cond.operator === 'not equals') return fieldValue !== cond.value;
+    if (cond.operator === 'contains') return fieldValue?.includes(cond.value);
+    if (cond.operator === 'not contains') return !fieldValue?.includes(cond.value);
+    return true;
+  });
+
+  if (!isVisible) return null;
+
+  return (
+    <div
+      key={element.id}
+      className={`field-container p-2 mb-2 border bg-gray-200 border-gray-200 relative hover:border-gray-400 hover:shadow-md transition duration-200 ${
+        selectedElementId === element.id
+          ? "border-solid border-2 border-gray-400"
+          : ""
+      }`}
+      onClick={() => handleSelectElement(element.id)}
+      style={{ borderRadius: "8px", position: "relative" }}
+    >
+          
             <div className="flex items-center space-x-2">
               <div className="flex-1">
                 {element.type === ItemTypes.H1 && (
@@ -276,6 +281,7 @@ const FormBuilder: React.FC = () => {
                     className="p-2 border border-gray-300 shadow-l rounded-xl"
                   />
                 )}
+        
                 {element.type === ItemTypes.CHECKBOX_GROUP && (
                   <div>
                     <label className="mr-2">Checkbox group :</label>
@@ -414,14 +420,10 @@ const FormBuilder: React.FC = () => {
                   <img src={downArrow} alt="Move Down" />
                 </button>
               </div>
-            </div>{" "}
-            
-        <button onClick={() => handleEditConditions(element)}>
-          Edit Conditions
-        </button>
+            </div>{" "} 
           </div>
           
-        ))}
+        )})}
       </div>
       <div className="flex justify-end">
         <button
@@ -431,6 +433,12 @@ const FormBuilder: React.FC = () => {
           Preview form
         </button>
 
+        <button
+         onClick={() => setShowNewModal(true)}
+           className="mb-4 mr-4 mt-2 p-2 bg-[#243c5a] text-white rounded-xl hover:shadow-lg"
+        >
+          Make conditions
+        </button>
       </div>
 
       {showModal && (
@@ -443,13 +451,15 @@ const FormBuilder: React.FC = () => {
           formRef={undefined}
         />
       )}
-   {editingConditionsElement && (
-  <ConditionModal
-    element={editingConditionsElement}
-    onClose={handleCloseConditionModal}
-    onSave={handleSaveConditions}
+{showNewModal && (
+  <NewModal
+    onClose={() => setShowNewModal(false)}
+    onSaveCondition={handleSaveCondition}
+    formElements={formElements}
   />
 )}
+
+
 
       {editingElement && (
         <EditOptionsModal
@@ -458,13 +468,7 @@ const FormBuilder: React.FC = () => {
           onUpdateOptions={handleUpdateOptions}
         />
       )}
-      {editElement && (
-        <EditTextModal
-          element={editElement}
-          onSave={handleSaveEdit}
-          onClose={handleCloseEditModal}
-        />
-      )}
+
     </div>
   );
 };

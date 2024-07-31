@@ -16,6 +16,7 @@ export const ItemTypes = {
     MULTI_FILE_UPLOAD: 'multi_file_upload',
     GROUP: 'group',
     TOGGLE: 'toggle',
+    BUTTON: 'button',
   } as const;
   
   export type ItemType = typeof ItemTypes[keyof typeof ItemTypes];
@@ -32,7 +33,7 @@ export const ItemTypes = {
     
   }
 
-  type Condition = {
+  export type Condition = {
     field: string;
     value: string;
     condition: string;

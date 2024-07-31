@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { FormElement } from './types';
+import trash from "assets/icons/trash.svg";
+import plus from "assets/icons/plus.svg";
+
 
 interface EditOptionsModalProps {
   element: FormElement;
@@ -40,24 +43,21 @@ const EditOptionsModal: React.FC<EditOptionsModalProps> = ({ element, onClose, o
               type="text"
               value={option}
               onChange={(e) => handleOptionChange(index, e.target.value)}
-              className="p-2 border border-gray-300 ml-2 rounded flex-grow"
+              className="p-2 border border-gray-300 ml-2 rounded flex-grow  hover:border-gray-500"
             />
-            <button
-              onClick={() => handleRemoveOption(index)}
-              className="p-2 bg-red-500 text-white rounded ml-2"
-            >
-              Remove
-            </button>
+             <button onClick={() => handleRemoveOption(index)} className="p-1">
+                <img src={trash} alt="Delete" className="w-5 h-5" />
+              </button>
           </div>
         ))}
-        <button onClick={handleAddOption} className="p-2 bg-blue-500 text-white rounded mb-4">
+        <button onClick={handleAddOption} className="p-2 bg-[#243c5a] text-white ml-2 rounded-xl mb-4">
           Add Option
         </button>
         <div className="flex justify-end">
-          <button onClick={onClose} className="p-2 bg-gray-300 text-black rounded mr-2">
+          <button onClick={onClose} className="p-2 bg-gray-300 text-black rounded-xl mr-2">
             Cancel
           </button>
-          <button onClick={handleSave} className="p-2 bg-green-500 text-white rounded">
+          <button onClick={handleSave} className="p-2 bg-green-500 text-white rounded-xl">
             Save
           </button>
         </div>
