@@ -1,0 +1,30 @@
+.field-container {
+  position: relative;
+  padding-right: 2.5rem; 
+}
+
+.up-down-icons {
+  position: absolute;
+  top: 50%;
+  right: -2.5rem;
+  transform: translateY(-50%);
+  display: grid;
+  gap: 4px;
+  visibility: hidden;
+}
+
+.field-container:hover .up-down-icons {
+  visibility: visible;
+}
+
+.up-down-icons button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+}
+
+.up-down-icons img {
+  width: 16px;
+  height: 16px;
+}
