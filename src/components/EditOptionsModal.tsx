@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { FormElement } from './types';
 import trash from "assets/icons/trash.svg";
-import plus from "assets/icons/plus.svg";
 
 
 interface EditOptionsModalProps {

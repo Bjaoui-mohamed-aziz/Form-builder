@@ -34,7 +34,9 @@ export const ItemTypes = {
   }
 
   export type Condition = {
+    operator: string;
     field: string;
     value: string;
-    condition: string;
+    fieldToAppear: string; // The field that should appear if the condition is met
+
 };

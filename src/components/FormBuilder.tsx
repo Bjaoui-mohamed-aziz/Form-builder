@@ -1,16 +1,15 @@
 import React, {  useState } from "react";
 import { useDrop } from "react-dnd";
 import { ItemTypes, ItemType } from "./types";
-import Modal from "./Modal";
 import EditOptionsModal from "./EditOptionsModal";
 import setting from "assets/icons/setting.svg";
 import trash from "assets/icons/trash.svg";
 import upArrow from "assets/icons/up.svg"; // Replace with actual path
 import downArrow from "assets/icons/down.svg";
 import "./style.css"; // Ensure Tailwind styles are included
-import NewModal from "./NewModal";
 import { Condition } from "./types";
-
+import ConditionModal from "./ConditionModal";
+import ModalPreview from "./ModalPreview";
 
 
 
@@ -181,21 +180,8 @@ const FormBuilder: React.FC = () => {
           <option> prescription </option>
           <option> workflow </option>
         </select>
-        {formElements.map((element) => {
-  const applicableConditions = conditions.filter(cond => cond.field === element.id);
-  const isVisible = applicableConditions.every(cond => {
-    const fieldValue = formElements.find(el => el.id === cond.field)?.value;
-    if (cond.operator === 'equals') return fieldValue === cond.value;
-    if (cond.operator === 'not equals') return fieldValue !== cond.value;
-    if (cond.operator === 'contains') return fieldValue?.includes(cond.value);
-    if (cond.operator === 'not contains') return !fieldValue?.includes(cond.value);
-    return true;
-  });
-
-  if (!isVisible) return null;
-
-  return (
-    <div
+        {formElements.map((element) => (
+          <div
       key={element.id}
       className={`field-container p-2 mb-2 border bg-gray-200 border-gray-200 relative hover:border-gray-400 hover:shadow-md transition duration-200 ${
         selectedElementId === element.id
@@ -423,7 +409,7 @@ const FormBuilder: React.FC = () => {
             </div>{" "} 
           </div>
           
-        )})}
+        ))}
       </div>
       <div className="flex justify-end">
         <button
@@ -442,7 +428,8 @@ const FormBuilder: React.FC = () => {
       </div>
 
       {showModal && (
-        <Modal
+        <ModalPreview
+          conditions={conditions}
           onClose={handleCloseModal}
           formElements={formElements}
           onUpdateElement={handleUpdateElement}
@@ -452,9 +439,9 @@ const FormBuilder: React.FC = () => {
         />
       )}
 {showNewModal && (
-  <NewModal
+  <ConditionModal
     onClose={() => setShowNewModal(false)}
-    onSaveCondition={handleSaveCondition}
+    onSave={handleSaveCondition}
     formElements={formElements}
   />
 )}
