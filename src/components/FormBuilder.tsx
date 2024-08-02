@@ -1,4 +1,4 @@
-import React, {  useState } from "react";
+import React, {  useEffect, useState } from "react";
 import { useDrop } from "react-dnd";
 import { ItemTypes, ItemType } from "./types";
 import EditOptionsModal from "./EditOptionsModal";
@@ -10,7 +10,8 @@ import "./style.css"; // Ensure Tailwind styles are included
 import { Condition } from "./types";
 import ConditionModal from "./ConditionModal";
 import ModalPreview from "./ModalPreview";
-
+import { useNavigate, useParams } from "react-router-dom";
+import FormComponent from "./FormComponent";
 
 
 type FormElement = {
@@ -24,29 +25,60 @@ type FormElement = {
   conditions?: Condition[];
 };
 
+type Form = {
+  id: string;
+  name: string;
+  type: string;
+};
 
+type FormBuilderProps = {
+  forms: Form[];
+  setForms: React.Dispatch<React.SetStateAction<Form[]>>;
+};
 
-const FormBuilder: React.FC = () => { 
+const FormBuilder: React.FC<FormBuilderProps> = ({ forms, setForms }) => {
   const [formElements, setFormElements] = useState<FormElement[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   const [editingElement, setEditingElement] = useState<FormElement | null>(null);
-  const [editElement, setEditElement] = useState<FormElement | null>(null);
-  const [componentName, setComponentName] = useState("");
-  const [componentType, setComponentType] = useState<string>("patient");
   const [conditions, setConditions] = useState<Condition[]>([]);
-  const [showNewModal, setShowNewModal] = useState(false);
+  const [showConditionsModal, setShowConditionsModal] = useState(false);
+  const [components, setComponents] = useState<any[]>([]);
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [componentName, setComponentName] = useState('');
+  const [componentType, setComponentType] = useState('');
 
+  useEffect(() => {
+    if (id) {
+      const form = forms.find(form => form.id === id);
+      if (form) {
+        setComponentName(form.name);
+        setComponentType(form.type);
+      }
+    }
+  }, [id, forms]);
+
+  const handleSaveForm = () => {
+    if (id) {
+      setForms(prevForms =>
+        prevForms.map(form =>
+          form.id === id ? { ...form, name: componentName, type: componentType } : form
+        )
+      );
+    }
+    navigate('/');
+  };
 
   const [, drop] = useDrop({
     accept: Object.values(ItemTypes),
     drop: (item: { type: ItemType }) => {
-      setFormElements((prev) => [
+      setFormElements(prev => [
         ...prev,
         { id: Date.now().toString(), type: item.type },
       ]);
     },
-    collect: (monitor) => ({
+    collect: monitor => ({
       isOver: !!monitor.isOver(),
     }),
   });
@@ -57,26 +89,27 @@ const FormBuilder: React.FC = () => {
 
   const handleCloseModal = () => {
     setShowModal(false);
-  }
-
- 
-  const handleSaveCondition = (condition: Condition) => {
-    setConditions((prev) => [...prev, condition]);
   };
 
+  const handleDeleteComponent = (id: string) => {
+    setComponents(components.filter(component => component.id !== id));
+  };
 
+  const handleSaveCondition = (condition: Condition) => {
+    setConditions(prev => [...prev, condition]);
+  };
 
   const handleUpdateElement = (id: string, value: string) => {
-    setFormElements((prev) =>
-      prev.map((element) =>
+    setFormElements(prev =>
+      prev.map(element =>
         element.id === id ? { ...element, value } : element
       )
     );
   };
 
   const handleUpdateOptions = (id: string, options: string[]) => {
-    setFormElements((prev) =>
-      prev.map((element) =>
+    setFormElements(prev =>
+      prev.map(element =>
         element.id === id ? { ...element, options } : element
       )
     );
@@ -84,8 +117,8 @@ const FormBuilder: React.FC = () => {
 
   const handleDeleteElement = () => {
     if (selectedElementId) {
-      setFormElements((prev) =>
-        prev.filter((element) => element.id !== selectedElementId)
+      setFormElements(prev =>
+        prev.filter(element => element.id !== selectedElementId)
       );
       setSelectedElementId(null); // Clear selection after deletion
     }
@@ -96,25 +129,24 @@ const FormBuilder: React.FC = () => {
   };
 
   const handleInputChange = (id: string, value: string) => {
-    setFormElements((prev) =>
-      prev.map((element) =>
+    setFormElements(prev =>
+      prev.map(element =>
         element.id === id ? { ...element, value } : element
       )
     );
   };
- 
 
   const handleLabelChange = (id: string, label: string) => {
-    setFormElements((prev) =>
-      prev.map((element) =>
+    setFormElements(prev =>
+      prev.map(element =>
         element.id === id ? { ...element, label } : element
       )
     );
   };
 
   const handleDefaultValueChange = (id: string, defaultValue: string) => {
-    setFormElements((prev) =>
-      prev.map((element) =>
+    setFormElements(prev =>
+      prev.map(element =>
         element.id === id ? { ...element, defaultValue } : element
       )
     );
@@ -128,16 +160,9 @@ const FormBuilder: React.FC = () => {
     setEditingElement(null);
   };
 
-  const handleSaveEdit = (updatedElement: FormElement) => {
-    setFormElements((prev) =>
-      prev.map((el) => (el.id === updatedElement.id ? updatedElement : el))
-    );
-    setEditElement(null);
-  };
-
   const moveElement = (id: string, direction: "up" | "down") => {
-    setFormElements((prev) => {
-      const index = prev.findIndex((element) => element.id === id);
+    setFormElements(prev => {
+      const index = prev.findIndex(element => element.id === id);
       if (index === -1) return prev;
 
       const newIndex = direction === "up" ? index - 1 : index + 1;
@@ -180,6 +205,8 @@ const FormBuilder: React.FC = () => {
           <option> prescription </option>
           <option> workflow </option>
         </select>
+
+
         {formElements.map((element) => (
           <div
       key={element.id}
@@ -420,7 +447,7 @@ const FormBuilder: React.FC = () => {
         </button>
 
         <button
-         onClick={() => setShowNewModal(true)}
+         onClick={() => setShowConditionsModal(true)}
            className="mb-4 mr-4 mt-2 p-2 bg-[#243c5a] text-white rounded-xl hover:shadow-lg"
         >
           Make conditions
@@ -436,16 +463,26 @@ const FormBuilder: React.FC = () => {
           componentName={componentName}
           componentType={componentType}
           formRef={undefined}
+          onSave={handleSaveForm}
         />
       )}
-{showNewModal && (
+{showConditionsModal && (
   <ConditionModal
-    onClose={() => setShowNewModal(false)}
+    onClose={() => setShowConditionsModal(false)}
     onSave={handleSaveCondition}
     formElements={formElements}
   />
 )}
 
+{components.map((component) => (
+          <FormComponent
+            key={component.id}
+            id={component.id}
+            name={component.name}
+            type={component.type}
+            onDelete={handleDeleteComponent}
+          />
+        ))}
 
 
       {editingElement && (

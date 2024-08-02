@@ -40,3 +40,14 @@ export const ItemTypes = {
     fieldToAppear: string; // The field that should appear if the condition is met
 
 };
+
+export type Form = {
+  id: string;
+  name: string;
+  type: string;
+};
+
+export type FormBuilderProps = {
+  forms: Form[];
+  setForms: React.Dispatch<React.SetStateAction<Form[]>>;
+};

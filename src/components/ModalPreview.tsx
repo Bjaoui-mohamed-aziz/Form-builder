@@ -16,6 +16,7 @@ interface ModalPreviewProps {
     options?: string[];
   }[];
   onUpdateElement: (id: string, value: string) => void;
+  onSave: (name: string, type: string) => void;
 }
 
 const Modal: React.FC<ModalPreviewProps> = ({
@@ -23,7 +24,8 @@ const Modal: React.FC<ModalPreviewProps> = ({
   formElements,
   componentName,
   componentType,
-  conditions
+  conditions,
+  onSave
 }) => {
   const [formState, setFormState] = React.useState(
     formElements.reduce((acc, el) => {
@@ -238,7 +240,10 @@ const Modal: React.FC<ModalPreviewProps> = ({
         <button onClick={onClose} className="mt-4 p-2 bg-blue-500 text-white rounded hover:bg-blue-600">
           Close
         </button>
-        <button className="p-2 bg-green-500 text-white ml-3 rounded mr-2">
+        <button className="p-2 bg-green-500 text-white ml-3 rounded mr-2"
+                    onClick={() => onSave(componentName, componentType)}
+
+        >
           Save Form
         </button>
       </div>

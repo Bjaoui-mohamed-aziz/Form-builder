@@ -22,7 +22,7 @@ const FormComponent: React.FC<FormComponentProps> = ({id, name, type, onDelete }
         <button className="p-2 bg-gray-300 mr-2 text-black rounded" onClick={() => onDelete(id)}>
           Delete
         </button>
-        <Link to="/form-builder">
+        <Link to={`/form-builder/${id}`}>
           <button className="p-2 bg-[#233368] text-white rounded">
             Edit
           </button>
