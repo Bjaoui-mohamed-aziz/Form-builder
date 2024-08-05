@@ -1,21 +1,22 @@
 import React, { useState } from "react";
-import { Routes, Route, Link, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import FormList from "./components/FormList";
 import DragDropContext from "./components/DragDropContext";
 import Sidebar from "./components/Sidebar";
 import FormBuilder from "./components/FormBuilder";
+import { FormElement } from "@components/types";
 
 const App: React.FC = () => {
-  const [forms, setForms] = useState<{ id: string; name: string; type: string }[]>([
-    { id: "1", name: "Form 1", type: "complex" },
+  const [forms, setForms] = useState<{ id: string; name: string; type: string ; elements: FormElement[] }[]>([
+    { id: "1", name: "Form 1", type: "complex" , elements: [] },
     // Add initial forms as needed
   ]);
 
-  const [currentForm, setCurrentForm] = useState<{ id: string; name: string; type: string } | null>(null);
+  const [currentForm, setCurrentForm] = useState<{ id: string; name: string; type: string ; elements: FormElement[]} | null>(null);
   const navigate = useNavigate();
 
   const handleAddComponent = () => {
-    const newForm = { id: (forms.length + 1).toString(), name: "", type: "" };
+    const newForm = { id: (forms.length + 1).toString(), name: "", type: "" , elements: [] };
     setCurrentForm(newForm);
     navigate("/form-builder");
   };
@@ -56,6 +57,7 @@ const App: React.FC = () => {
                 setForms={setForms}
                 currentForm={currentForm}
                 setCurrentForm={setCurrentForm}
+
               />
             </div>
           </DragDropContext>
@@ -72,6 +74,7 @@ const App: React.FC = () => {
                 setForms={setForms}
                 currentForm={currentForm}
                 setCurrentForm={setCurrentForm}
+
               />
             </div>
           </DragDropContext>

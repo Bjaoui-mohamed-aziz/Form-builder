@@ -28,13 +28,14 @@ type FormElement = {
 
 
 interface FormBuilderProps {
-  forms: { id: string; name: string; type: string }[];
-  setForms: React.Dispatch<React.SetStateAction<{ id: string; name: string; type: string }[]>>;
-  currentForm: { id: string; name: string; type: string } | null;
-  setCurrentForm: React.Dispatch<React.SetStateAction<{ id: string; name: string; type: string } | null>>;
+  forms: { id: string; name: string; type: string;  elements: FormElement[] }[];
+  setForms: React.Dispatch<React.SetStateAction<{ id: string; name: string; type: string; elements: FormElement[] }[]>>;
+  currentForm: { id: string; name: string; type: string ; elements: FormElement[]} | null;
+  setCurrentForm: React.Dispatch<React.SetStateAction<{ id: string; name: string; type: string ; elements: FormElement[]} | null>>;
+
 }
 
-const FormBuilder: React.FC<FormBuilderProps> = ({ forms, setForms , currentForm , setCurrentForm
+const FormBuilder: React.FC<FormBuilderProps> = ({ forms, setForms , currentForm , setCurrentForm 
 
  }) => {
   const [formElements, setFormElements] = useState<FormElement[]>([]);
@@ -55,20 +56,22 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ forms, setForms , currentForm
       if (form) {
         setComponentName(form.name);
         setComponentType(form.type);
+        setFormElements(form.elements || []); // Load existing elements
       }
     } else if (currentForm) {
       setComponentName(currentForm.name);
       setComponentType(currentForm.type);
+      setFormElements(currentForm.elements || []); // Load existing elements
     }
   }, [id, forms, currentForm]);
 
   const handleSave = () => {
     if (id) {
       // Editing an existing form
-      setForms(forms.map(form => form.id === id ? { ...form, name: componentName, type: componentType } : form));
+      setForms(forms.map(form => form.id === id ? { ...form, name: componentName, type: componentType, elements: formElements } : form));
     } else {
       // Adding a new form
-      const newForm = { id: (forms.length + 1).toString(), name: componentName, type: componentType };
+      const newForm = { id: (forms.length + 1).toString(), name: componentName, type: componentType, elements: formElements };
       setForms([...forms, newForm]);
       setCurrentForm(newForm); // Update currentForm with the new form
     }
@@ -257,6 +260,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ forms, setForms , currentForm
                     <label className="mr-2">Text field :</label>
                     <input
                       type="text"
+                      value={element.label || ""}
                       className="p-2 border border-gray-300 shadow-l rounded-xl"
                       placeholder="Label"
                       onChange={(e) =>
@@ -280,6 +284,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ forms, setForms , currentForm
                     <label className="mr-2">Date :</label>
                     <input
                       type="text"
+                      value={element.label || ""}
                       className="p-2 border border-gray-300 shadow-l rounded-xl"
                       placeholder="Label"
                       onChange={(e) =>
@@ -305,7 +310,9 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ forms, setForms , currentForm
                     <label className="mr-2">Checkbox group :</label>
                     <br></br>
                     <input
+                    
                       type="text"
+                      value={element.label || ""}
                       className="p-2 border border-gray-300 shadow-l rounded-xl"
                       placeholder="Label"
                       onChange={(e) =>
@@ -331,6 +338,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ forms, setForms , currentForm
                     <input
                       type="text"
                       className="p-2 border border-gray-300 shadow-l rounded-xl"
+                      value={element.label || ""}
                       placeholder="Label"
                       onChange={(e) =>
                         handleLabelChange(element.id, e.target.value)
@@ -350,6 +358,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ forms, setForms , currentForm
                     <br></br>
                     <input
                       type="text"
+                      value={element.label || ""}
                       className="p-2 border border-gray-300 shadow-l rounded-xl"
                       placeholder="Label"
                       onChange={(e) =>

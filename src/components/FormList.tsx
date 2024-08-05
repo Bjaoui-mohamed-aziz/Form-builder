@@ -1,5 +1,6 @@
 import React from 'react';
 import FormComponent from './FormComponent';
+import { FormElement } from './types';
 
 type FormListProps = {
   forms: { id: string;
@@ -11,6 +12,7 @@ type FormListProps = {
     id: string;
     name: string;
     type: string;
+    elements: FormElement[];
 
   }[]>>;
   onEdit: (id: string) => void; // Add edit handler prop
