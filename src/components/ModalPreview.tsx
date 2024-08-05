@@ -16,7 +16,7 @@ interface ModalPreviewProps {
     options?: string[];
   }[];
   onUpdateElement: (id: string, value: string) => void;
-  onSave: (name: string, type: string) => void;
+  onSave: () => void;
 }
 
 const Modal: React.FC<ModalPreviewProps> = ({
@@ -241,7 +241,7 @@ const Modal: React.FC<ModalPreviewProps> = ({
           Close
         </button>
         <button className="p-2 bg-green-500 text-white ml-3 rounded mr-2"
-                    onClick={() => onSave(componentName, componentType)}
+                    onClick={onSave}
 
         >
           Save Form

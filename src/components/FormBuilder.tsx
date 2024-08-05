@@ -25,18 +25,18 @@ type FormElement = {
   conditions?: Condition[];
 };
 
-type Form = {
-  id: string;
-  name: string;
-  type: string;
-};
 
-type FormBuilderProps = {
-  forms: Form[];
-  setForms: React.Dispatch<React.SetStateAction<Form[]>>;
-};
 
-const FormBuilder: React.FC<FormBuilderProps> = ({ forms, setForms }) => {
+interface FormBuilderProps {
+  forms: { id: string; name: string; type: string }[];
+  setForms: React.Dispatch<React.SetStateAction<{ id: string; name: string; type: string }[]>>;
+  currentForm: { id: string; name: string; type: string } | null;
+  setCurrentForm: React.Dispatch<React.SetStateAction<{ id: string; name: string; type: string } | null>>;
+}
+
+const FormBuilder: React.FC<FormBuilderProps> = ({ forms, setForms , currentForm , setCurrentForm
+
+ }) => {
   const [formElements, setFormElements] = useState<FormElement[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
@@ -56,18 +56,23 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ forms, setForms }) => {
         setComponentName(form.name);
         setComponentType(form.type);
       }
+    } else if (currentForm) {
+      setComponentName(currentForm.name);
+      setComponentType(currentForm.type);
     }
-  }, [id, forms]);
+  }, [id, forms, currentForm]);
 
-  const handleSaveForm = () => {
+  const handleSave = () => {
     if (id) {
-      setForms(prevForms =>
-        prevForms.map(form =>
-          form.id === id ? { ...form, name: componentName, type: componentType } : form
-        )
-      );
+      // Editing an existing form
+      setForms(forms.map(form => form.id === id ? { ...form, name: componentName, type: componentType } : form));
+    } else {
+      // Adding a new form
+      const newForm = { id: (forms.length + 1).toString(), name: componentName, type: componentType };
+      setForms([...forms, newForm]);
+      setCurrentForm(newForm); // Update currentForm with the new form
     }
-    navigate('/');
+    navigate("/");
   };
 
   const [, drop] = useDrop({
@@ -463,7 +468,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ forms, setForms }) => {
           componentName={componentName}
           componentType={componentType}
           formRef={undefined}
-          onSave={handleSaveForm}
+          onSave={handleSave}
         />
       )}
 {showConditionsModal && (
@@ -481,6 +486,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ forms, setForms }) => {
             name={component.name}
             type={component.type}
             onDelete={handleDeleteComponent}
+            onEdit={component.onEdit}
           />
         ))}
 
