@@ -436,13 +436,13 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ forms, setForms , currentForm
               <div className="up-down-icons">
                 <button
                   onClick={() => moveElement(element.id, "up")}
-                  className="p-1"
+                  className="p-1 hover:scale-125"
                 >
                   <img src={upArrow} alt="Move Up" />
                 </button>
                 <button
                   onClick={() => moveElement(element.id, "down")}
-                  className="p-1"
+                  className="p-1 hover:scale-125"
                 >
                   <img src={downArrow} alt="Move Down" />
                 </button>
@@ -496,6 +496,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ forms, setForms , currentForm
             type={component.type}
             onDelete={handleDeleteComponent}
             onEdit={component.onEdit}
+            onPreview={component.onPreview}
           />
         ))}
 

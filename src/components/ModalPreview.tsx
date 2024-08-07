@@ -24,7 +24,7 @@ const Modal: React.FC<ModalPreviewProps> = ({
   formElements,
   componentName,
   componentType,
-  conditions,
+  conditions = [],
   onSave
 }) => {
   const [formState, setFormState] = React.useState(
