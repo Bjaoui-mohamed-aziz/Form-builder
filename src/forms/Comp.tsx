@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Routes, Route, useNavigate, useParams } from "react-router-dom";
-import FormList from "./components/FormList";
-import DragDropContext from "./components/DragDropContext";
-import Sidebar from "./components/Sidebar";
-import FormBuilder from "./components/FormBuilder";
-import { FormElement } from "./components/types";
+import FormList from "./FormList";
+import DragDropContext from "./DragDropContext";
+import Sidebar from "./Sidebar";
+import FormBuilder from "./FormBuilder";
+import { FormElement } from "./types";
 
-const App: React.FC = () => {
+const Comp: React.FC = () => {
   const [forms, setForms] = useState<{ id: string; name: string; type: string; elements: FormElement[]  }[]>([
     { id: "1", name: "Form 1", type: "complex", elements: [] },
     // Add initial forms as needed
@@ -17,6 +17,7 @@ const App: React.FC = () => {
   const { id } = useParams<{ id: string }>();
 
   const handleAddComponent = () => {
+    console.log(id)
     const newForm = { id: (forms.length + 1).toString(), name: "", type: "", elements: [] };
     setCurrentForm(newForm);
     navigate("/form-builder");
@@ -30,13 +31,6 @@ const App: React.FC = () => {
     }
   };
 
-  const handlePreviewComponent = (id: string) => {
-    const formToPreview = forms.find(form => form.id === id);
-    if (formToPreview) {
-      setCurrentForm(formToPreview);
-      navigate(`/form-preview/${id}`);
-    }
-  };
 
   useEffect(() => {
     if (id) {
@@ -108,4 +102,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default Comp;

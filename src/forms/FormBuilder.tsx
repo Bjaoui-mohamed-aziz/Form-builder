@@ -68,15 +68,26 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ forms, setForms , currentForm
   const handleSave = () => {
     if (id) {
       // Editing an existing form
-      setForms(forms.map(form => form.id === id ? { ...form, name: componentName, type: componentType, elements: formElements } : form));
+      setForms(forms.map(form =>
+        form.id === id
+          ? { ...form, name: componentName, type: componentType, elements: formElements, conditions: conditions }
+          : form
+      ));
     } else {
       // Adding a new form
-      const newForm = { id: (forms.length + 1).toString(), name: componentName, type: componentType, elements: formElements };
+      const newForm = {
+        id: (forms.length + 1).toString(),
+        name: componentName,
+        type: componentType,
+        elements: formElements,
+        conditions: conditions, // Save conditions here
+      };
       setForms([...forms, newForm]);
       setCurrentForm(newForm); // Update currentForm with the new form
     }
     navigate("/");
   };
+  
 
   const [, drop] = useDrop({
     accept: Object.values(ItemTypes),

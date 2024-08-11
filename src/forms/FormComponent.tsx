@@ -11,7 +11,9 @@ type FormComponentProps = {
   onPreview: (id: string) => void; // Add onPreview prop
 };
 
-const FormComponent: React.FC<FormComponentProps> = ({ id, name, type, onDelete, onPreview }) => {
+const FormComponent: React.FC<FormComponentProps> = ({ id, name, type, onDelete,  onPreview }) => {
+
+  
   return (
     <div className="w-60 h-48 flex flex-col m-4 border-2 border-gray-300 p-4 mb-4 shadow-lg rounded-lg bg-white relative hover:bg-gray-100 hover:shadow-2xl transition duration-300 hover:scale-105">
       <div className='static'>
@@ -28,11 +30,9 @@ const FormComponent: React.FC<FormComponentProps> = ({ id, name, type, onDelete,
         <button className="p-2 bg-gray-300 mr-2 text-black rounded hover:bg-gray-400" onClick={() => onDelete(id)}>
           Delete
         </button>
-        <Link to={`/form-builder/${id}`}>
           <button className="p-2 bg-[#233368] text-white rounded hover:bg-[#2f3e6f]">
             Edit
           </button>
-        </Link>
       </div>
     </div>
   );
